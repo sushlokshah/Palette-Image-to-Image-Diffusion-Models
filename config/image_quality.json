@@ -1,5 +1,5 @@
 {
-    "name": "colorization_mirflickr25k",
+    "name": "image_enhancement", // experiment name
     "gpu_ids": [
         0
     ], // gpu ids list, default is single 0

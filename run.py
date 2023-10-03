@@ -11,6 +11,7 @@ from data import define_dataloader
 from models import create_model, define_network, define_loss, define_metric
 import matplotlib.pyplot as plt
 import tensorboardX
+import wandb
 
 def main_worker(gpu, ngpus_per_node, opt):
     """  threads running on each GPU """
@@ -88,6 +89,7 @@ def main_worker(gpu, ngpus_per_node, opt):
         
         
 if __name__ == '__main__':
+    wandb.init(project="my-project", sync_tensorboard=True)
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', type=str, default='config/image_quality.json', help='JSON file for configuration')
     parser.add_argument('-p', '--phase', type=str, choices=['train','test'], help='Run train or test', default='train')
@@ -116,3 +118,5 @@ if __name__ == '__main__':
     else:
         opt['world_size'] = 1 
         main_worker(0, 1, opt)
+        
+    wandb.finish()
