@@ -130,7 +130,7 @@ class InpaintDataset(data.Dataset):
 
 
 class Image_Enhancement(data.Dataset):
-    def __init__(self, data_root, data_len=-1, image_size=[112, 112], loader=pil_loader):
+    def __init__(self, data_root, data_len=-1, image_size=[64, 64], loader=pil_loader):
         print("Initializing Image Enhancement Dataset")
         imgs = make_dataset(data_root)
         if data_len > 0:

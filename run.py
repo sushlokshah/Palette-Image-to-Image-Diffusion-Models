@@ -10,6 +10,7 @@ import core.util as Util
 from data import define_dataloader
 from models import create_model, define_network, define_loss, define_metric
 import matplotlib.pyplot as plt
+import tensorboardX
 
 def main_worker(gpu, ngpus_per_node, opt):
     """  threads running on each GPU """
