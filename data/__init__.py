@@ -42,8 +42,10 @@ def define_dataset(logger, opt):
 
     valid_len = 0
     data_len = len(phase_dataset)
+    logger.info('Dataset for {} have {} samples.'.format(opt['phase'], data_len))
     if 'debug' in opt['name']:
         debug_split = opt['debug'].get('debug_split', 1.0)
+        # print('debug_split: ', debug_split)
         if isinstance(debug_split, int):
             data_len = debug_split
         else:
@@ -60,6 +62,8 @@ def define_dataset(logger, opt):
         else:
             valid_len = int(data_len * valid_split)
         data_len -= valid_len
+        # logger.info('Dataset for {} have {} samples.'.format(opt['phase'], data_len))
+        # logger.info('Dataset for {} have {} samples.'.format('val', valid_len))
         phase_dataset, val_dataset = subset_split(dataset=phase_dataset, lengths=[data_len, valid_len], generator=Generator().manual_seed(opt['seed']))
     
     logger.info('Dataset for {} have {} samples.'.format(opt['phase'], data_len))

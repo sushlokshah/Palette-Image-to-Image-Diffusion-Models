@@ -60,8 +60,8 @@ class Palette(BaseModel):
         ''' must use set_device in tensor '''
         self.cond_image = self.set_device(data.get('cond_image'))
         self.gt_image = self.set_device(data.get('gt_image'))
-        self.mask = self.set_device(data.get('mask'))
-        self.mask_image = data.get('mask_image')
+        self.mask = None #self.set_device(data.get('mask'))
+        self.mask_image = None #data.get('mask_image')
         self.path = data['path']
         self.batch_size = len(data['path'])
     
@@ -139,13 +139,15 @@ class Palette(BaseModel):
                         self.output, self.visuals = self.netG.module.restoration(self.cond_image, y_t=self.cond_image, 
                             y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
                     else:
-                        self.output, self.visuals = self.netG.module.restoration(self.cond_image, sample_num=self.sample_num)
+                        self.output, self.visuals = self.netG.module.restoration(self.cond_image, y_t=self.cond_image, 
+                            y_0=self.gt_image, sample_num=self.sample_num)
                 else:
                     if self.task in ['inpainting','uncropping']:
                         self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
                             y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
                     else:
-                        self.output, self.visuals = self.netG.restoration(self.cond_image, sample_num=self.sample_num)
+                        self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
+                            y_0=self.gt_image, sample_num=self.sample_num)
                     
                 self.iter += self.batch_size
                 self.writer.set_iter(self.epoch, self.iter, phase='val')
@@ -172,13 +174,15 @@ class Palette(BaseModel):
                         self.output, self.visuals = self.netG.module.restoration(self.cond_image, y_t=self.cond_image, 
                             y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
                     else:
-                        self.output, self.visuals = self.netG.module.restoration(self.cond_image, sample_num=self.sample_num)
+                        self.output, self.visuals = self.netG.module.restoration(self.cond_image,y_t=self.cond_image, 
+                            y_0=self.gt_image, sample_num=self.sample_num)
                 else:
                     if self.task in ['inpainting','uncropping']:
                         self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
                             y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
                     else:
-                        self.output, self.visuals = self.netG.restoration(self.cond_image, sample_num=self.sample_num)
+                        self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
+                            y_0=self.gt_image, sample_num=self.sample_num)
                         
                 self.iter += self.batch_size
                 self.writer.set_iter(self.epoch, self.iter, phase='test')
