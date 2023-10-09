@@ -107,6 +107,7 @@ class VisualWriter():
         ''' get names and corresponding images from results[OrderedDict] '''
         try:
             names = results['name']
+            # print(names)
             outputs = Util.postprocess(results['result'])
             for i in range(len(names)): 
                 Image.fromarray(outputs[i]).save(os.path.join(result_path, names[i]))

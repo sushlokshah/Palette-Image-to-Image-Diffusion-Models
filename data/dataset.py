@@ -35,13 +35,23 @@ def make_noisy_image(img_pil):
     noisy_img_np = np.array(img_pil)
     
     # compress image to 1/4 size and upscale to original size
-    noisy_img_np = np.array(Image.fromarray(noisy_img_np).resize((int(noisy_img_np.shape[1]/1.414), int(noisy_img_np.shape[0]/1.414)), Image.NEAREST))
-    noisy_img_np = np.array(Image.fromarray(noisy_img_np).resize((int(noisy_img_np.shape[1]*1.414), int(noisy_img_np.shape[0]*1.414)), Image.NEAREST))
+    noisy_img_np = np.array(Image.fromarray(noisy_img_np).resize((int(noisy_img_np.shape[1]/4), int(noisy_img_np.shape[0]/4)), Image.NEAREST))
+    noisy_img_np = np.array(Image.fromarray(noisy_img_np).resize((int(noisy_img_np.shape[1]*4), int(noisy_img_np.shape[0]*4)), Image.NEAREST))
+    
+    # gaussian blur using albumentations
+    transform = A.GaussianBlur(blur_limit=(15,19), p=1)
+    noisy_img_np = transform(image=noisy_img_np)['image']
     
     # jpeg compression using albumentations
     # if random.random() < 0.2:
     #     transform = A.JpegCompression(p=1, quality_lower=90, quality_upper=100)
     #     noisy_img_np = transform(image=noisy_img_np)['image']
+    
+    # change brightness using albumentations
+    if random.random() < 0.8:
+        transform = A.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.4,  p=1)
+        noisy_img_np = transform(image=noisy_img_np)['image']
+    
     
     # add gaussian noise using albumentations
     if random.random() < 0.8:
@@ -130,7 +140,7 @@ class InpaintDataset(data.Dataset):
 
 
 class Image_Enhancement(data.Dataset):
-    def __init__(self, data_root, data_len=-1, image_size=[64, 64], loader=pil_loader):
+    def __init__(self, data_root, data_len=-1, image_size=[112, 112], loader=pil_loader):
         print("Initializing Image Enhancement Dataset")
         imgs = make_dataset(data_root)
         if data_len > 0:
@@ -151,9 +161,12 @@ class Image_Enhancement(data.Dataset):
         ret = {}
         path = self.imgs[index]
         img_pil = self.loader(path)
-        img_pil = img_pil.resize((2*self.image_size[0], 2*self.image_size[1]), Image.ADAPTIVE)
+        # img_pil = img_pil.resize((2*self.image_size[0], 2*self.image_size[1]), Image.ADAPTIVE)
+        img_pil = img_pil.point(lambda p: int(p * 0.9))
         img = self.tfs(img_pil)
-        noisy_image = make_noisy_image(img_pil)
+        img_pil = img_pil.resize((2*self.image_size[0], 2*self.image_size[1]), Image.ADAPTIVE)
+        noisy_image = img_pil
+        # noisy_image = make_noisy_image(img_pil)
         noisy_tensor = self.tfs(noisy_image)
         # mask = self.get_mask()
         # cond_image = img*(1. - mask) + mask*torch.randn_like(img)
@@ -163,7 +176,7 @@ class Image_Enhancement(data.Dataset):
         ret['cond_image'] = noisy_tensor
         # ret['mask_image'] = torch.zeros_like(noisy_tensor)
         # ret['mask'] = torch.zeros_like(noisy_tensor)
-        ret['path'] = path
+        ret['path'] = path.split("/")[-1]
         return ret
 
     def __len__(self):

@@ -11,8 +11,8 @@
         "tb_logger": "tb_logger", // path of tensorboard logger
         "results": "results",
         "checkpoint": "checkpoint",
-        // "resume_state": "experiments/inpainting_places2_220413_143231/checkpoint/25" 
-        "resume_state": null // ex: 100, loading .state  and .pth from given epoch and iteration
+        "resume_state": "/home/awi-docker/image_quality/Palette-Image-to-Image-Diffusion-Models/experiments/train_image_enhancement_231005_182010/checkpoint/150"
+        // "resume_state": "/home/awi-docker/image_quality/Palette-Image-to-Image-Diffusion-Models/experiments/train_image_enhancement_231004_183528/checkpoint/400" // ex: 100, loading .state  and .pth from given epoch and iteration
     },
     "datasets": { // train or test
         "train": {
@@ -28,9 +28,9 @@
                 }
             },
             "dataloader": {
-                "validation_split": 0.1, // percent or number 
+                "validation_split": 0.001, // percent or number 
                 "args": { // arguments to initialize train_dataloader
-                    "batch_size": 64, // batch size in each gpu
+                    "batch_size": 32, // batch size in each gpu
                     "num_workers": 4,
                     "shuffle": true,
                     "pin_memory": true,
@@ -49,13 +49,14 @@
             "which_dataset": {
                 "name": "Image_Enhancement", // import Dataset() class / function(not recommend) from default file
                 "args": {
-                    "data_root": "/home/awi-docker/image_quality/CelebAMask-HQ/CelebA-HQ-img"
+                    "data_root": "/home/awi-docker/image_quality/test_img_wb"
+                    // "data_root": "/home/awi-docker/image_quality/11aug-pics"
                     // "data_flist": "datasets/mirflickr25k/flist/test.flist"
                 }
             },
             "dataloader": {
                 "args": {
-                    "batch_size": 64,
+                    "batch_size": 1,
                     "num_workers": 4,
                     "pin_memory": true
                 }
@@ -123,9 +124,9 @@
                         },
                         "test": {
                             "schedule": "linear",
-                            "n_timestep": 1000,
-                            "linear_start": 1e-4,
-                            "linear_end": 0.09
+                            "n_timestep": 2000,
+                            "linear_start": 1e-6,
+                            "linear_end": 0.01
                         }
                     }
                 }
@@ -141,8 +142,8 @@
     "train": { // arguments for basic training
         "n_epoch": 1e8, // max epochs, not limited now
         "n_iter": 1e8, // max interations
-        "val_epoch": 1, // valdation every specified number of epochs
-        "save_checkpoint_epoch": 10,
+        "val_epoch": 50, // valdation every specified number of epochs
+        "save_checkpoint_epoch": 50,
         "log_iter": 1e4, // log every specified number of iterations
         "tensorboard": true // tensorboardX enable
     },

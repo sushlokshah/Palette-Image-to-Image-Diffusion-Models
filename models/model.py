@@ -99,6 +99,7 @@ class Palette(BaseModel):
             ret_result.extend(self.mask_image)
 
         self.results_dict = self.results_dict._replace(name=ret_path, result=ret_result)
+        # print(self.results_dict._asdict())
         return self.results_dict._asdict()
 
     def train_step(self):

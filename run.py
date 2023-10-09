@@ -45,6 +45,7 @@ def main_worker(gpu, ngpus_per_node, opt):
     
     # validate dataset
     if opt['validate_data']:
+        print("validate data")
         for i, data in enumerate(phase_loader):
             image_gt = data['gt_image'][0]
             noisy_image = data['cond_image'][0]
@@ -55,7 +56,8 @@ def main_worker(gpu, ngpus_per_node, opt):
             plt.imshow(np_gt)
             plt.subplot(1,2,2)
             plt.imshow(np_noise)
-            plt.show()
+            # save image
+            plt.savefig("/home/awi-docker/image_quality/Palette-Image-to-Image-Diffusion-Models/experiments/validate_data_{}.png".format(i))
             if i > 10:
                 break
     
@@ -77,8 +79,8 @@ def main_worker(gpu, ngpus_per_node, opt):
         logger = phase_logger,
         writer = phase_writer
     )
-
     phase_logger.info('Begin model {}.'.format(opt['phase']))
+    
     try:
         if opt['phase'] == 'train':
             model.train()
@@ -86,13 +88,13 @@ def main_worker(gpu, ngpus_per_node, opt):
             model.test()
     finally:
         phase_writer.close()
-        
+    
         
 if __name__ == '__main__':
-    wandb.init(project="my-project", sync_tensorboard=True)
+    wandb.init(project="diffusion_64*64_image_quality_enhancement", sync_tensorboard=True)
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', type=str, default='config/image_quality.json', help='JSON file for configuration')
-    parser.add_argument('-p', '--phase', type=str, choices=['train','test'], help='Run train or test', default='train')
+    parser.add_argument('-p', '--phase', type=str, choices=['train','test'], help='Run train or test', default='test')
     parser.add_argument('-b', '--batch', type=int, default=None, help='Batch size in every gpu')
     parser.add_argument('-gpu', '--gpu_ids', type=str, default=None)
     parser.add_argument('-d', '--debug', action='store_true')
